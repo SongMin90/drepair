@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.drepair.mapper.RepairerMapperCustom" >
+    <!-- resultMap -->
+    <resultMap id="BaseResultMap" type="com.drepair.po.RepairerCustom">
+        <id column="repairer_id" jdbcType="INTEGER" property="repairerId" />
+	    <result column="repairer_name" jdbcType="VARCHAR" property="repairerName" />
+	    <result column="repairer_phone" jdbcType="VARCHAR" property="repairerPhone" />
+	    <result column="repairer_icard" jdbcType="VARCHAR" property="repairerIcard" />
+	    <result column="repairer_pwd" jdbcType="VARCHAR" property="repairerPwd" />
+    </resultMap>
+    
+    <!-- Base_Column_List -->
+    <sql id="Base_Column_List" >
+    	repairer_id, repairer_name, repairer_phone, repairer_icard, repairer_pwd
+  	</sql>
+    
+    <!-- 通过手机号查询 -->
+    <select id="findByPhone" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select 
+	    <include refid="Base_Column_List" />
+	    from repairer
+	    where repairer_phone = #{repairerPhone,jdbcType=VARCHAR}
+    </select>
+</mapper>

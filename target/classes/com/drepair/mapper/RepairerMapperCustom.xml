@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.drepair.mapper.RepairerMapperCustom" >
+    <!-- resultMap -->
+    <resultMap id="BaseResultMap" type="com.drepair.po.RepairerCustom">
+        <id column="repairer_id" jdbcType="INTEGER" property="repairerId" />
+	    <result column="repairer_name" jdbcType="VARCHAR" property="repairerName" />
+	    <result column="repairer_phone" jdbcType="VARCHAR" property="repairerPhone" />
+	    <result column="repairer_icard" jdbcType="VARCHAR" property="repairerIcard" />
+	    <result column="repairer_pwd" jdbcType="VARCHAR" property="repairerPwd" />
+    </resultMap>
+    
+    <!-- Base_Column_List -->
+    <sql id="Base_Column_List" >
+    	repairer_id, repairer_name, repairer_phone, repairer_icard, repairer_pwd
+  	</sql>
+    
+    <!-- 通过手机号查询 -->
+    <select id="findByPhone" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select 
+	    <include refid="Base_Column_List" />
+	    from repairer
+	    where repairer_phone = #{repairerPhone,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 添加一条记录 -->
+    <insert id="save" parameterType="com.drepair.po.RepairerCustom">
+        INSERT INTO `repairer` 
+        (`repairer_name`, `repairer_phone`, `repairer_icard`, `repairer_pwd`) 
+        VALUES 
+        (#{repairerName,jdbcType=VARCHAR}, 
+        #{repairerPhone,jdbcType=VARCHAR}, 
+        #{repairerIcard,jdbcType=VARCHAR}, 
+        #{repairerPwd,jdbcType=VARCHAR})
+    </insert>
+    
+    <!-- 查询全部维修员 -->
+    <select id="findAllRepairer" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select 
+	    <include refid="Base_Column_List" />
+	    from repairer LIMIT #{0}, #{1}
+    </select>
+    
+    <!-- 获取维修员总记录数 -->
+    <select id="findAllCount" resultType="java.lang.Integer">
+        select count(*) from `repairer`
+    </select>
+    
+    <!-- 通过ID删除维修员 -->
+    <delete id="deleteRepairer" parameterType="java.lang.Integer">
+        delete from `repairer` where `repairer_id`=#{repairerId,jdbcType=INTEGER}
+    </delete>
+    
+    <!-- 更新维修员信息 -->
+    <update id="updateRepairer" parameterType="com.drepair.po.RepairerCustom">
+        UPDATE `repairer` SET 
+        `repairer_name`=#{repairerName,jdbcType=VARCHAR}, `repairer_phone`=#{repairerPhone,jdbcType=VARCHAR}, 
+        `repairer_icard`=#{repairerIcard,jdbcType=VARCHAR}, `repairer_pwd`=#{repairerPwd,jdbcType=VARCHAR} 
+        WHERE (`repairer_id`=#{repairerId,jdbcType=INTEGER})
+    </update>
+    
+    <!-- 客户端根据手机号重置密码 -->
+    <update id="updatePwdByPhone" parameterType="String">
+        UPDATE `repairer` SET `repairer_pwd`=#{1} WHERE  (`repairer_phone`=#{0})
+    </update>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans      
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd      
+		http://www.springframework.org/schema/context      
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd      
+		http://www.springframework.org/schema/mvc      
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx   
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!-- 可以扫描controller、service、... 这里让扫描controller，指定controller的包 -->
+	<context:component-scan base-package="com.drepair.controller"></context:component-scan>
+
+	<!-- 静态资源解析 包括：js、css、img、.. -->
+	<!-- <mvc:resources location="/" mapping="/**"/> -->
+	<mvc:resources location="/" mapping="/**" />
+	<!-- <mvc:resources location="/admin/assets/" mapping="/admin/assets/**" />
+	<mvc:resources location="/img/" mapping="/img/**" /> -->
+
+	<!-- 使用mvc:annotation-driven代替上边注解映射器和注解适配器 mvc:annotation-driven默认加载很多的参数绑定方法，比如json转换解析器就默认加载了 -->
+	<!-- <mvc:annotation-driven conversion-service="conversionService"
+		validator="validator"></mvc:annotation-driven> -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+
+	<!-- 视图解析器 解析jsp，默认使用jstl标签 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置jsp页面路径的前缀和后缀 -->
+		<property name="prefix" value="/admin/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 自定义参数绑定 -->
+	<!-- <bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		转换器
+		<property name="converters">
+			<list>
+				日期类型转换
+				<bean class="com.drepair.converter.CustomDateConverter"></bean>
+			</list>
+		</property>
+	</bean> -->
+
+	<!-- 校验器 -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<!-- 校验器 -->
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+		<!--指定校验使用的资源文件，如果不指定则默认使用classpath下的ValidationMessages.properties -->
+		<property name="validationMessageSource" ref="messageSource" />
+	</bean>
+	<!-- 校验错误信息配置文件 -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<!-- 资源文件名 -->
+		<property name="basenames">
+			<list>
+				<value>classpath:CustomValidationMessages</value>
+			</list>
+		</property>
+		<!-- 资源文件编码格式 -->
+		<property name="fileEncodings" value="utf-8" />
+		<!-- 对资源文件内容缓存时间，单位秒 -->
+		<property name="cacheSeconds" value="120" />
+	</bean>
+
+	<!-- 全局异常处理器 只要实现HandlerExceptionResolver接口就是全局异常处理器 -->
+	<bean class="com.drepair.exception.CustomExceptionResolver" />
+
+	<!-- 文件上传 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">
+			<!-- 设置文件上传的最大尺寸为30MB -->
+			<value>31457280</value>
+		</property>
+	</bean>
+
+	<!-- 拦截器 -->
+	<!-- <mvc:interceptors>
+        多个拦截器,顺序执行
+        <mvc:interceptor>
+            /**表示所有url包括字url路径
+			<mvc:mapping path="/**" />
+            <bean class="com.drepair.interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>  --> 
+	
+	<!-- 网站设置配置文件 -->
+	<bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:webset.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+        <property name="properties" ref="configProperties" />
+    </bean>
+	
+</beans>

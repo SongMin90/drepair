@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drepair.mapper.StuMapperCustom">
+    <!-- resultMap -->
+    <resultMap id="BaseResultMap" type="com.drepair.po.StuCustom" >
+        <id column="stu_id" jdbcType="VARCHAR" property="stuId" />
+	    <result column="stu_pwd" jdbcType="VARCHAR" property="stuPwd" />
+	    <result column="stu_phone" jdbcType="VARCHAR" property="stuPhone" />
+    </resultMap>
+    
+    <!-- Base_Column_List -->
+    <sql id="Base_Column_List" >
+    	stu_id, stu_pwd, stu_phone
+  	</sql>
+  	
+    <!-- 自定义学生表查询 -->
+    <select id="findByPhone" parameterType="String" resultMap="BaseResultMap">
+        select 
+	    <include refid="Base_Column_List" />
+	    from stu
+	    where stu_phone = #{stuPhone,jdbcType=VARCHAR}
+    </select>
+</mapper>

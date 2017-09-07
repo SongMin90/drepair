@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drepair.mapper.AdminMapperCustom">
+    
+    <!-- resultMap -->
+  	<resultMap id="BaseResultMap" type="com.drepair.po.AdminCustom" >
+	    <id column="admin_id" property="adminId" jdbcType="INTEGER" />
+	    <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+	    <result column="admin_pwd" property="adminPwd" jdbcType="VARCHAR" />
+	    <result column="admin_icard" property="adminIcard" jdbcType="VARCHAR" />
+	    <result column="admin_phone" property="adminPhone" jdbcType="VARCHAR" />
+	</resultMap>
+    
+  	<!-- 通过ID查询 -->
+  	<select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	    SELECT * FROM `admin` WHERE `admin_id`=#{adminId,jdbcType=INTEGER}
+  	</select>
+  	
+  	<!-- 通过手机号查询 -->
+  	<select id="findByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	    SELECT * FROM `admin` WHERE `admin_phone`=#{adminPhone,jdbcType=VARCHAR}
+  	</select>
+  	
+  	<!-- 添加一条记录 -->
+  	<insert id="save" parameterType="com.drepair.po.AdminCustom">
+		insert into admin (
+				admin_name, 
+				admin_pwd, 
+				admin_icard, 
+				admin_phone
+			)
+			values ( 
+				#{adminName,jdbcType=VARCHAR}, 
+				#{adminPwd,jdbcType=VARCHAR}, 
+    			#{adminIcard,jdbcType=VARCHAR}, 
+    			#{adminPhone,jdbcType=VARCHAR}
+   			)
+  	</insert>
+  	
+  	<!-- 更新一条记录 -->
+  	<update id="updateById" parameterType="com.drepair.po.AdminCustom">
+  	    update admin
+	    <set >
+	      <if test="adminName != null" >
+	        admin_name = #{adminName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="adminPwd != null" >
+	        admin_pwd = #{adminPwd,jdbcType=VARCHAR},
+	      </if>
+	      <if test="adminIcard != null" >
+	        admin_icard = #{adminIcard,jdbcType=VARCHAR},
+	      </if>
+	      <if test="adminPhone != null" >
+	        admin_phone = #{adminPhone,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+    	where admin_id = #{adminId,jdbcType=INTEGER}
+  	</update>
+  	
+  	<!-- 删除一条记录 -->
+  	<delete id="deleteById" parameterType="java.lang.Integer">
+  	    DELETE FROM `admin` WHERE (`admin_id`=#{adminId,jdbcType=INTEGER})
+  	</delete>
+  	
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drepair.mapper.StuMapperCustom">
+    <!-- resultMap -->
+    <resultMap id="BaseResultMap" type="com.drepair.po.StuCustom" >
+        <id column="stu_id" jdbcType="VARCHAR" property="stuId" />
+	    <result column="stu_pwd" jdbcType="VARCHAR" property="stuPwd" />
+	    <result column="stu_phone" jdbcType="VARCHAR" property="stuPhone" />
+    </resultMap>
+    
+    <!-- Base_Column_List -->
+    <sql id="Base_Column_List" >
+    	stu_id, stu_pwd, stu_phone
+  	</sql>
+  	
+    <!-- 自定义学生表查询 -->
+    <select id="findByPhone" parameterType="String" resultMap="BaseResultMap">
+        select 
+	    <include refid="Base_Column_List" />
+	    from stu
+	    where stu_phone = #{stuPhone,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 分页查询所有学生 -->
+    <select id="findAllStu" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select 
+	    <include refid="Base_Column_List" />
+	    from stu
+	    LIMIT #{0}, #{1}
+    </select>
+    
+    <!-- 查询学生总记录数 -->
+    <select id="findAllCount" resultType="java.lang.Integer">
+        select count(*) from `stu`
+    </select>
+    
+    <!-- 通过学生Id删除学生 -->
+    <delete id="deleteStu" parameterType="java.lang.Integer">
+        delete from `stu` where `stu_id`=#{stuId,jdbcType=INTEGER}
+    </delete>
+    
+    <!-- 更新学生信息 -->
+    <update id="updateStu" parameterType="com.drepair.po.StuCustom">
+        UPDATE `stu` SET `stu_pwd`=#{stuPwd,jdbcType=VARCHAR}, `stu_phone`=#{stuPhone,jdbcType=VARCHAR} WHERE (`stu_id`=#{stuId,jdbcType=VARCHAR})
+    </update>
+    
+    <!-- 根据手机号重置密码 -->
+    <update id="updatePwdByPhone" parameterType="String">
+        UPDATE `stu` SET `stu_pwd`=#{1} WHERE (`stu_phone`=#{0})
+    </update>
+</mapper>

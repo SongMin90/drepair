@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.drepair.mapper.EvalMapperCustom">
+    
+    <resultMap id="BaseResultMap" type="com.drepair.po.EvalCustom">
+        <id column="eval_id" property="evalId" jdbcType="INTEGER"/>
+        <result column="eval_content" property="evalContent" jdbcType="VARCHAR" />
+	    <result column="eval_score" property="evalScore" jdbcType="INTEGER" />
+	    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+	    <result column="stu_id" property="stuId" jdbcType="VARCHAR" />
+	    <result column="hmr_id" property="hmrId" jdbcType="INTEGER" />
+	    <result column="repairer_id" property="repairerId" jdbcType="INTEGER" />
+	    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+    </resultMap>
+    
+    <!-- 自定义网页编辑订单信息显示评价内容及评价人的resultMap -->
+    <resultMap type="com.drepair.po.EvalCustom1" id="editOrderEvalMap">
+        <!-- 评价内容 -->
+        <association property="evalCustom" javaType="com.drepair.po.EvalCustom">
+            <id column="eval_id" property="evalId" jdbcType="INTEGER"/>
+        	<result column="eval_content" property="evalContent" jdbcType="VARCHAR" />
+        </association>
+        <!-- 评价人名字（管理员） -->
+        <association property="adminCustom" javaType="com.drepair.po.AdminCustom">
+            <id column="admin_id" property="adminId" jdbcType="INTEGER" />
+            <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+        </association>
+        <!-- 评价人名字（维修员员） -->
+        <association property="repairerCustom" javaType="com.drepair.po.RepairerCustom">
+            <id column="repairer_id" jdbcType="INTEGER" property="repairerId" />
+            <result column="repairer_name" jdbcType="VARCHAR" property="repairerName" />
+        </association>
+    </resultMap>
+    
+    <!-- 添加一条记录 -->
+    <insert id="save" parameterType="com.drepair.po.EvalCustom">
+        insert into eval (eval_content, eval_score, 
+	      order_id, stu_id, hmr_id, 
+	      repairer_id, admin_id)
+	    values (#{evalContent,jdbcType=VARCHAR}, #{evalScore,jdbcType=INTEGER}, 
+	      #{orderId,jdbcType=INTEGER}, #{stuId,jdbcType=VARCHAR}, #{hmrId,jdbcType=INTEGER}, 
+	      #{repairerId,jdbcType=INTEGER}, #{adminId,jdbcType=INTEGER})
+    </insert>
+  	
+    <!-- 通过订单Id查询评价 -->
+    <select id="findByOrderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select * from `eval` where `order_id`=#{orderId,jdbcType=INTEGER}
+    </select>
+    
+    <!-- 查询评论内容和评论人ID及姓名 -->
+    <select id="findOrder" parameterType="com.drepair.po.EvalCustom" resultMap="editOrderEvalMap">
+        select 
+        	`eval`.* 
+        	<if test="adminId != null" >
+        	,`admin`.* 
+        	</if>
+        	<if test="repairerId != null" >
+        	,`repairer`.* 
+        	</if>
+        from 
+        	`eval` 
+        	<if test="adminId != null" >
+        	,`admin` 
+        	</if>
+        	<if test="repairerId != null" >
+        	,`repairer` 
+        	</if>
+        where 
+        	<if test="adminId != null" >
+        	`eval`.`admin_id`=`admin`.`admin_id` 
+        	</if> 
+        	<if test="repairerId != null" >
+        	`eval`.`repairer_id`=`repairer`.`repairer_id` 
+        	</if>
+        and 
+        	`order_id`=#{orderId,jdbcType=INTEGER}
+    </select>
+    
+    <!-- 通用添加评价 -->
+    <insert id="add" parameterType="com.drepair.po.EvalCustom">
+        insert into eval 
+        (
+        	<if test="orderId != null" >
+        	order_id
+	        </if>
+	        <if test="evalScore != null" >
+	        , eval_score
+	        </if>
+	        <if test="evalContent != null" >
+	        , eval_content
+	        </if>
+	        <if test="stuId != null" >
+	        , stu_id
+	        </if>
+	        <if test="hmrId != null" >
+	        , hmr_id
+	        </if>
+	        <if test="repairerId != null" >
+	        , repairer_id
+	        </if>
+	        <if test="adminId != null" >
+	        , admin_id
+	        </if>
+        )
+	    values (
+	    	<if test="orderId != null" >
+	    	#{orderId,jdbcType=INTEGER}
+		    </if>
+		    <if test="evalScore != null" >
+		    , #{evalScore,jdbcType=INTEGER}
+		    </if>
+		    <if test="evalContent != null" >
+		    , #{evalContent,jdbcType=VARCHAR}
+		    </if>
+		    <if test="stuId != null" >
+		    , #{stuId,jdbcType=VARCHAR}
+		    </if>
+		    <if test="hmrId != null" >
+		    , #{hmrId,jdbcType=INTEGER}
+		    </if>
+		    <if test="repairerId != null" >
+		    , #{repairerId,jdbcType=INTEGER}
+		    </if>
+		    <if test="adminId != null" >
+		    , #{adminId,jdbcType=INTEGER}
+		    </if>
+	    )
+    </insert>
+    
+    <!-- 通过订单ID删除评价 -->
+    <delete id="delByOrderId" parameterType="java.lang.Integer">
+        delete from eval where order_id=#{0}
+    </delete>
+    
+    <!-- 通过管理员ID删除评价 -->
+    <delete id="delByAdminId" parameterType="java.lang.Integer">
+        delete from eval where admin_id=#{0}
+    </delete>
+    
+    <!-- 通过学生ID删除评价 -->
+    <delete id="delByStuId" parameterType="java.lang.Integer">
+        delete from eval where stu_id=#{0}
+    </delete>
+    
+    <!-- 通过宿管ID删除评价 -->
+    <delete id="delByHmrId" parameterType="java.lang.Integer">
+        delete from eval where hmr_id=#{0}
+    </delete>
+    
+    <!-- 通过维修员ID删除评价 -->
+    <delete id="delByRepairerId" parameterType="java.lang.Integer">
+        delete from eval where repairer_id=#{0}
+    </delete>
+</mapper>

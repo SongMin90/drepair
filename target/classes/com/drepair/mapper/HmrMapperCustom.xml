@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.drepair.mapper.HmrMapperCustom" >
+    <resultMap id="BaseResultMap" type="com.drepair.po.HmrCustom" >
+	    <id column="hmr_id" property="hmrId" jdbcType="INTEGER" />
+	    <result column="hmr_name" property="hmrName" jdbcType="VARCHAR" />
+	    <result column="hmr_pwd" property="hmrPwd" jdbcType="VARCHAR" />
+	    <result column="hmr_floor" property="hmrFloor" jdbcType="VARCHAR" />
+	    <result column="hmr_icard" property="hmrIcard" jdbcType="VARCHAR" />
+	    <result column="hmr_phone" property="hmrPhone" jdbcType="VARCHAR" />
+	</resultMap>
+  
+    <!-- 取到宿管总记录数 -->
+    <select id="findAllCount" resultType="java.lang.Integer">
+        select count(*) from `hmr`;
+    </select>
+    
+    <!-- 分页查询全部宿管 -->
+    <select id="findAllHmr" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM `hmr` LIMIT #{0}, #{1}
+    </select>
+    
+    <!-- 通过宿管Id删除宿管 -->
+    <delete id="deleteHmr" parameterType="java.lang.Integer">
+        DELETE FROM `hmr` WHERE (`hmr_id`=#{hmrId,jdbcType=INTEGER})
+    </delete>
+    
+    <!-- 通过ID查询宿管信息 -->
+    <select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM `hmr` WHERE `hmr_id`=#{hmrId,jdbcType=INTEGER}
+    </select>
+    
+    <!-- 更新宿管信息 -->
+    <update id="updateHmr" parameterType="com.drepair.po.HmrCustom">
+        UPDATE `hmr` SET `hmr_pwd`=#{hmrPwd,jdbcType=VARCHAR}, `hmr_phone`=#{hmrPhone,jdbcType=VARCHAR} 
+        WHERE (`hmr_id`=#{hmrId,jdbcType=INTEGER})
+    </update>
+    
+    <!-- 通过手机号查找 -->
+    <select id="findByPhone" parameterType="String" resultMap="BaseResultMap">
+        select * from hmr where hmr_phone=#{0}
+    </select>
+    
+    <!-- 添加一条宿管信息记录 -->
+    <insert id="save" parameterType="com.drepair.po.HmrCustom">
+        INSERT INTO `hmr` 
+        (
+        	`hmr_id`, `hmr_pwd`, `hmr_phone`
+        ) VALUES (
+        	#{hmrId,jdbcType=INTEGER}, #{hmrPwd,jdbcType=VARCHAR}, #{hmrPhone,jdbcType=VARCHAR}
+        )
+    </insert>
+    
+    <!-- 宿管通过手机号更新密码 -->
+    <update id="updatePwdByPhone" parameterType="String">
+        update hmr set hmr_pwd=#{1} where hmr_phone=#{0}
+    </update>
+</mapper>
