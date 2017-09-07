@@ -60,12 +60,6 @@ CREATE TABLE `eval` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of eval
--- ----------------------------
-INSERT INTO `eval` VALUES ('4', 'wei xiu yuan ping lun', null, '8', null, null, '4', null);
-INSERT INTO `eval` VALUES ('5', 'bao xiu ren ping lun', null, '8', '1', null, null, null);
-
--- ----------------------------
 -- Table structure for hmr
 -- ----------------------------
 DROP TABLE IF EXISTS `hmr`;
@@ -80,11 +74,6 @@ CREATE TABLE `hmr` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of hmr
--- ----------------------------
-INSERT INTO `hmr` VALUES ('3', null, '123456', null, null, '12345678901');
-
--- ----------------------------
 -- Table structure for img
 -- ----------------------------
 DROP TABLE IF EXISTS `img`;
@@ -97,13 +86,6 @@ CREATE TABLE `img` (
   KEY `order_id` (`order_id`),
   CONSTRAINT `img_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of img
--- ----------------------------
-INSERT INTO `img` VALUES ('11', 'imgs/2017_09_05/22_28_08/307750.jpg', '2017-09-05 22:28:08', '8');
-INSERT INTO `img` VALUES ('12', 'imgs/2017_09_05/22_44_50/30.jpg', '2017-09-05 22:44:50', '9');
-INSERT INTO `img` VALUES ('13', 'imgs/2017_09_06/13_33_19/211361842318851718122988915.jpg', '2017-09-06 13:33:19', '10');
 
 -- ----------------------------
 -- Table structure for order
@@ -131,13 +113,6 @@ CREATE TABLE `order` (
   CONSTRAINT `order_ibfk_4` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`admin_id`),
   CONSTRAINT `order_ibfk_5` FOREIGN KEY (`repairer_id`) REFERENCES `repairer` (`repairer_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of order
--- ----------------------------
-INSERT INTO `order` VALUES ('8', 'test', '1', '11', '2017-09-05 22:28:07', '2017-09-05 22:30:23', null, 'A1-101', '1', null, '4');
-INSERT INTO `order` VALUES ('9', '宿管报修测试！', null, '1', '2017-09-05 22:44:50', null, '3', 'A1', '0', null, null);
-INSERT INTO `order` VALUES ('10', '罗何元', '1', '1', '2017-09-06 13:33:18', null, null, 'A1-101', '0', null, null);
 
 -- ----------------------------
 -- Table structure for repairer
@@ -182,8 +157,3 @@ CREATE TABLE `stu` (
   `stu_phone` varchar(11) NOT NULL COMMENT '学生手机号码',
   PRIMARY KEY (`stu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of stu
--- ----------------------------
-INSERT INTO `stu` VALUES ('1', '123456', '12345678901');
