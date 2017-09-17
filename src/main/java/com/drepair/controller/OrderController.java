@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.drepair.api.json.Analysis;
+import com.drepair.api.net.HttpUtils;
+import com.drepair.api.po.Hmr;
+import com.drepair.api.po.Stu;
 import com.drepair.exception.CustomException;
 import com.drepair.po.EvalCustom;
 import com.drepair.po.EvalCustom1;
@@ -338,14 +342,22 @@ public class OrderController {
 			// 取出订单创建人信息
 			if(order.getStuId() != null) {
 				StuCustom stuCustom = stuService.findById(order.getStuId());
+				String json = HttpUtils.getJSON(HttpUtils.STU_URL, order.getStuId());
+				Stu forStu = Analysis.forStu(json);
+				if(forStu.getFind().equals("success")) {
+					model.addAttribute("name", forStu.getStudent().getStudentName());
+				}
 				model.addAttribute("id", stuCustom.getStuId());
-				model.addAttribute("name", "张三");
 				model.addAttribute("phone", stuCustom.getStuPhone());
 			} else {
 				// TODO 取出宿管信息，并发送到jsp
 				HmrCustom hmr = hmrService.findById(order.getHmrId());
+				String json = HttpUtils.getJSON(HttpUtils.HMR_URL, order.getHmrId()+"");
+				Hmr forHmr = Analysis.forHmr(json);
+				if(forHmr.getFind().equals("success")) {
+					model.addAttribute("name", forHmr.getManager().getManagerName());
+				}
 				model.addAttribute("id", hmr.getHmrId());
-				model.addAttribute("name", "张宿管");
 				model.addAttribute("phone", hmr.getHmrPhone());
 			}
 			
