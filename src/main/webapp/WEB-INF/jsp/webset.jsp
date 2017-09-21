@@ -30,6 +30,7 @@
 						<li><a href="#tab2">客户端</a></li>
 						<li><a href="#tab3">数据库备份</a></li>
 						<li><a href="#tab4">网站更新</a></li>
+						<li><a href="#tab5">API</a></li>
 					</ul>
 
 					<div class="am-tabs-bd">
@@ -386,6 +387,36 @@
 							</form>
 						</div>
 
+						<!-- API -->
+						<div class="am-tab-panel am-fade" id="tab5">
+							<form class="am-form" action="${pageContext.request.contextPath}/webset/api" method="post">
+								<div class="am-g am-margin-top-sm">
+									<div class="am-u-sm-4 am-u-md-2 am-text-right">学生详细信息API</div>
+									<div class="am-u-sm-8 am-u-md-4 am-u-end">
+										<textarea rows="2" cols="44" disabled>http://47.94.252.54:8080/dormitory/External/studentInfo.action?studentId=1</textarea>
+									</div>
+								</div>
+
+								<div class="am-g am-margin-top-sm">
+									<div class="am-u-sm-4 am-u-md-2 am-text-right">宿管详细信息API</div>
+									<div class="am-u-sm-8 am-u-md-4 am-u-end">
+										<textarea rows="2" cols="44" disabled>http://47.94.252.54:8080/dormitory/External//dormitoryManagerInfo.action?managerId=3</textarea>
+									</div>
+								</div>
+
+								<div class="am-g am-margin-top">
+									<div class="am-u-sm-4 am-u-md-2 am-text-right">
+										<c:if test="${apiState == 'off'}">
+											<button type="submit" class="am-btn am-btn-primary am-btn-xs"><span class="am-icon-play"></span> 启用</button>
+										</c:if>
+										<c:if test="${apiState == 'on'}">
+											<button type="submit" class="am-btn am-btn-danger am-btn-xs"><span class="am-icon-stop"></span> 停用</button>
+										</c:if>
+									</div>
+								</div>
+							</form>
+						</div>
+					
 					</div>
 				</div>
 

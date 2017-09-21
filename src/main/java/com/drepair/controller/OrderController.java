@@ -333,7 +333,7 @@ public class OrderController {
 	@Autowired StuService stuService;
 	@Autowired RepairerService repairerService;
 	@RequestMapping(value="/editOrder", method={RequestMethod.GET})
-	public String editOrder(Model model, Integer orderId) {
+	public String editOrder(Model model, Integer orderId, HttpServletRequest request) {
 		OrderCustom order = null;
 		try {
 			// 取出订单信息
@@ -342,8 +342,19 @@ public class OrderController {
 			// 取出订单创建人信息
 			if(order.getStuId() != null) {
 				StuCustom stuCustom = stuService.findById(order.getStuId());
-				String json = HttpUtils.getJSON(HttpUtils.STU_URL, order.getStuId());
-				Stu forStu = Analysis.forStu(json);
+				Stu forStu = new Stu();
+				if(WebsetCotroller.read(request).getApiState().equals("on")) {
+					try {
+						String json = HttpUtils.getJSON(HttpUtils.STU_URL, order.getStuId());
+						forStu = Analysis.forStu(json);
+					} catch (Exception e) {
+						new CustomException("网络接口取值失败！");
+						e.printStackTrace();
+					}
+				} else {
+					forStu.setFind("success");
+					forStu.getStudent().setStudentName("姓名");
+				}
 				if(forStu.getFind().equals("success")) {
 					model.addAttribute("name", forStu.getStudent().getStudentName());
 				}
@@ -352,8 +363,19 @@ public class OrderController {
 			} else {
 				// TODO 取出宿管信息，并发送到jsp
 				HmrCustom hmr = hmrService.findById(order.getHmrId());
-				String json = HttpUtils.getJSON(HttpUtils.HMR_URL, order.getHmrId()+"");
-				Hmr forHmr = Analysis.forHmr(json);
+				Hmr forHmr = new Hmr();
+				if(WebsetCotroller.read(request).getApiState().equals("on")) {
+					try {
+						String json = HttpUtils.getJSON(HttpUtils.HMR_URL, order.getHmrId()+"");
+						forHmr = Analysis.forHmr(json);
+					} catch (Exception e) {
+						new CustomException("网络接口取值失败！");
+						e.printStackTrace();
+					}
+				} else {
+					forHmr.setFind("success");
+					forHmr.getManager().setManagerName("姓名");
+				}
 				if(forHmr.getFind().equals("success")) {
 					model.addAttribute("name", forHmr.getManager().getManagerName());
 				}
@@ -383,10 +405,30 @@ public class OrderController {
 				// 取出评价人信息
 				if(evalList.get(i).getStuId() != null) {
 					// TODO 根据api获取学生姓名，先模拟数据
-					evalCustom2.setEvalName("张三");
+					if(WebsetCotroller.read(request).getApiState().equals("on")) {
+						try {
+							String json = HttpUtils.getJSON(HttpUtils.STU_URL, order.getStuId());
+							evalCustom2.setEvalName(Analysis.forStu(json).getStudent().getStudentName());
+						} catch (Exception e) {
+							new CustomException("网络接口取值失败！");
+							e.printStackTrace();
+						}
+					} else {
+						evalCustom2.setEvalName("姓名");
+					}
 				} else if(evalList.get(i).getHmrId() != null) {
 					// TODO 根据api获取宿管姓名，先模拟数据
-					evalCustom2.setEvalName("张三");
+					if(WebsetCotroller.read(request).getApiState().equals("on")) {
+						try {
+							String json = HttpUtils.getJSON(HttpUtils.HMR_URL, order.getHmrId()+"");
+							evalCustom2.setEvalName(Analysis.forHmr(json).getManager().getManagerName());
+						} catch (Exception e) {
+							new CustomException("网络接口取值失败！");
+							e.printStackTrace();
+						}
+					} else {
+						evalCustom2.setEvalName("姓名");
+					}
 				} else {
 					// 查询评论内容和评论人ID及姓名
 					EvalCustom1 evalCustom1 = evalService.findOrder(evalList.get(i));

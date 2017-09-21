@@ -51,4 +51,19 @@ public class ImgServiceImpl implements ImgService {
 		
 	}
 
+	@Override
+	public void saveIcon(ImgCustom imgCustom) throws Exception {
+		imgMapperCustom.saveIcon(imgCustom);
+	}
+
+	@Override
+	public String findIconUrl(ImgCustom imgCustom) throws Exception {
+		return imgMapperCustom.findIconUrl(imgCustom);
+	}
+
+	@Override
+	public void updateIcon(ImgCustom imgCustom) throws Exception {
+		imgMapperCustom.updateIcon(imgCustom);
+	}
+
 }

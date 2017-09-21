@@ -19,6 +19,7 @@ import com.drepair.api.po.Stu;
 import com.drepair.exception.CustomException;
 import com.drepair.po.StuCustom;
 import com.drepair.service.StuService;
+import com.drepair.utils.FileHelper;
 
 /**
  * StuController
@@ -75,7 +76,7 @@ public class StuController {
 	 * @return
 	 */
 	@RequestMapping(value="/register", method={RequestMethod.POST})
-	public @ResponseBody Map<String, String> register(StuCustom stuCustom, String phoneCode) {
+	public @ResponseBody Map<String, String> register(StuCustom stuCustom, HttpServletRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("register", "error");
 		
@@ -104,14 +105,20 @@ public class StuController {
 			return map;
 		}
 		
-		// TODO 验证手机短信验证码是否正确
-		
 		// TODO 这里调用罗何元的通过学号查询数据，如果返回error表示学号不存在，即注册失败
-		String json = HttpUtils.getJSON(HttpUtils.STU_URL, stuCustom.getStuId());
-		Stu forStu = Analysis.forStu(json);
-		if(forStu.getFind().equals("error")) {
-			map.put("reason", "学号不存在！");
-			return map;
+		if(WebsetCotroller.read(request).getApiState().equals("on")) {
+			try {
+				String json = HttpUtils.getJSON(HttpUtils.STU_URL, stuCustom.getStuId());
+				Stu forStu = Analysis.forStu(json);
+				if(forStu.getFind().equals("error")) {
+					map.put("reason", "学号不存在！");
+					return map;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				map.put("reason", "网络接口取值失败！");
+				return map;
+			}
 		}
 		
 		// 信息存入数据库
@@ -132,7 +139,7 @@ public class StuController {
 	 * @return
 	 */
 	@RequestMapping(value="/findFullInfo", method={RequestMethod.GET})
-	public @ResponseBody Map<String, String> findFullInfo(String idOrPhone) {
+	public @ResponseBody Map<String, String> findFullInfo(String idOrPhone, HttpServletRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("find", "error");
 		
@@ -156,8 +163,22 @@ public class StuController {
 			map.put("phone", stuCustom.getStuPhone() + "");
 			
 			// TODO 通过学号或工号取出学生详细信息（罗何元的接口）
-			String json = HttpUtils.getJSON(HttpUtils.STU_URL, stuCustom.getStuId());
-			Stu forStu = Analysis.forStu(json);
+			Stu forStu = new Stu();
+			if(WebsetCotroller.read(request).getApiState().equals("on")) {
+				try {
+					String json = HttpUtils.getJSON(HttpUtils.STU_URL, stuCustom.getStuId());
+					forStu = Analysis.forStu(json);
+				} catch (Exception e) {
+					e.printStackTrace();
+					map.put("reason", "网络接口取值失败！");
+					return map;
+				}
+			} else {
+				// 模拟数据
+				String path = request.getServletContext().getRealPath("/WEB-INF/") + "/stu.json";
+				String json = FileHelper.readUTF8(path);
+				forStu = Analysis.forStu(json);
+			}
 			
 			if(forStu.getFind().equals("success")) {
 				map.put("name", forStu.getStudent().getStudentName());
@@ -238,13 +259,27 @@ public class StuController {
 	 * @return
 	 */
 	@RequestMapping(value="editStu", method={RequestMethod.GET})
-	public String editStu(Model model, String stuId) {
+	public String editStu(Model model, String stuId, HttpServletRequest request) {
 		try {
 			StuCustom stu = stuService.findById(stuId);
 			
 			// TODO 这里根据api获取数据
-			String json = HttpUtils.getJSON(HttpUtils.STU_URL, stuId);
-			Stu forStu = Analysis.forStu(json);
+			Stu forStu = new Stu();
+			if(WebsetCotroller.read(request).getApiState().equals("on")) {
+				try {
+					String json = HttpUtils.getJSON(HttpUtils.STU_URL, stuId);
+					forStu = Analysis.forStu(json);
+				} catch (Exception e) {
+					e.printStackTrace();
+					new CustomException("网络接口取值失败！");
+				}
+			} else {
+				// 模拟数据
+				String path = request.getServletContext().getRealPath("/WEB-INF/") + "/stu.json";
+				String json = FileHelper.readUTF8(path);
+				forStu = Analysis.forStu(json);
+			}
+			
 			stu.setStuName(forStu.getStudent().getStudentName());
 			stu.setStuSex(forStu.getStudent().getStudentSex());
 			stu.setStuRoom(forStu.getStudent().getDormInfo().getDormName() + "-" + forStu.getStudent().getDormroomInfo().getRoomNum());

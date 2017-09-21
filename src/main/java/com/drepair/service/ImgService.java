@@ -35,4 +35,26 @@ public interface ImgService {
 	 * @throws Exception
 	 */
 	public void delById(HttpServletRequest request, Integer orderId) throws Exception;
+
+	/**
+	 * 添加用户头像
+	 * @param imgCustom
+	 * @throws Exception
+	 */
+	public void saveIcon(ImgCustom imgCustom) throws Exception;
+
+	/**
+	 * 查询用户头像url
+	 * @param imgCustom
+	 * @return
+	 * @throws Exception
+	 */
+	public String findIconUrl(ImgCustom imgCustom) throws Exception;
+
+	/**
+	 * 更新用户头像
+	 * @param imgCustom
+	 * @throws Exception
+	 */
+	public void updateIcon(ImgCustom imgCustom) throws Exception;
 }

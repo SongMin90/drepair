@@ -19,6 +19,7 @@ import com.drepair.api.po.Hmr;
 import com.drepair.exception.CustomException;
 import com.drepair.po.HmrCustom;
 import com.drepair.service.HmrService;
+import com.drepair.utils.FileHelper;
 
 /**
  * 宿管Controller
@@ -98,17 +99,31 @@ public class HmrController {
 	 * @return
 	 */
 	@RequestMapping(value="editHmr", method={RequestMethod.GET})
-	public String editHmr(Model model, Integer hmrId) {
+	public String editHmr(Model model, Integer hmrId, HttpServletRequest request) {
 		try {
 			HmrCustom hmr = hmrService.findById(hmrId);
 			
 			// TODO 网络接口调用
-			String json = HttpUtils.getJSON(HttpUtils.HMR_URL, hmrId+"");
-			Hmr forHmr = Analysis.forHmr(json);
+			Hmr forHmr = new Hmr();
+			if(WebsetCotroller.read(request).getApiState().equals("on")) {
+				try {
+					String json = HttpUtils.getJSON(HttpUtils.HMR_URL, hmrId+"");
+					forHmr = Analysis.forHmr(json);
+				} catch (Exception e) {
+					new CustomException("网络接口取值失败！");
+					e.printStackTrace();
+				}
+			} else {
+				// 模拟数据
+				String path = request.getServletContext().getRealPath("/WEB-INF/") + "/hmr.json";
+				String json = FileHelper.readUTF8(path);
+				forHmr = Analysis.forHmr(json);
+			}
+			
 			hmr.setHmrName(forHmr.getManager().getManagerName());
 			hmr.setHmrFloor(forHmr.getManager().getDormInfo().getDormName());
-			hmr.setHmrSex("暂无数据");
-			hmr.setHmrIcard("暂无数据");
+			hmr.setHmrSex("性别");
+			hmr.setHmrIcard("身份证号码");
 			
 			// 将学生信息发送到页面
 			model.addAttribute("hmr", hmr);
@@ -185,7 +200,7 @@ public class HmrController {
 	 * @return
 	 */
 	@RequestMapping(value="/findFullInfo", method={RequestMethod.GET})
-	public @ResponseBody Map<String, String> findFullInfo(String idOrPhone) {
+	public @ResponseBody Map<String, String> findFullInfo(String idOrPhone, HttpServletRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("find", "error");
 		
@@ -208,8 +223,22 @@ public class HmrController {
 			map.put("phone", hmrCustom.getHmrPhone() + "");
 			
 			// TODO 网络接口调用
-			String json = HttpUtils.getJSON(HttpUtils.HMR_URL, hmrCustom.getHmrId()+"");
-			Hmr forHmr = Analysis.forHmr(json);
+			Hmr forHmr = new Hmr();
+			if(WebsetCotroller.read(request).getApiState().equals("on")) {
+				try {
+					String json = HttpUtils.getJSON(HttpUtils.HMR_URL, hmrCustom.getHmrId()+"");
+					forHmr = Analysis.forHmr(json);
+				} catch (Exception e) {
+					map.put("reason", "网络接口取值失败！");
+					e.printStackTrace();
+					return map;
+				}
+			} else {
+				// 模拟数据
+				String path = request.getServletContext().getRealPath("/WEB-INF/") + "/hmr.json";
+				String json = FileHelper.readUTF8(path);
+				forHmr = Analysis.forHmr(json);
+			}
 			
 			if(forHmr.getFind().equals("success")) {
 				map.put("name", forHmr.getManager().getManagerName());
@@ -229,7 +258,7 @@ public class HmrController {
 	 * @return
 	 */
 	@RequestMapping(value="/register", method={RequestMethod.POST})
-	public @ResponseBody Map<String, String> register(HmrCustom hmrCustom, String phoneCode) {
+	public @ResponseBody Map<String, String> register(HmrCustom hmrCustom, HttpServletRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("register", "error");
 		try {
@@ -245,11 +274,24 @@ public class HmrController {
 				return map;
 			}
 			
-			// TODO 验证手机短信验证码是否正确
-			
 			// TODO 这里调用罗何元的通过工号查询数据，如果返回为error表示工号不存在，即注册失败
-			String json = HttpUtils.getJSON(HttpUtils.HMR_URL, hmrCustom.getHmrId()+"");
-			Hmr forHmr = Analysis.forHmr(json);
+			Hmr forHmr = new Hmr();
+			if(WebsetCotroller.read(request).getApiState().equals("on")) {
+				try {
+					String json = HttpUtils.getJSON(HttpUtils.HMR_URL, hmrCustom.getHmrId()+"");
+					forHmr = Analysis.forHmr(json);
+				} catch (Exception e) {
+					map.put("reason", "网络接口取值失败！");
+					e.printStackTrace();
+					return map;
+				}
+			} else {
+				// 模拟数据
+				String path = request.getServletContext().getRealPath("/WEB-INF/") + "/hmr.json";
+				String json = FileHelper.readUTF8(path);
+				forHmr = Analysis.forHmr(json);
+			}
+			
 			if(forHmr.getFind().equals("error")) {
 				map.put("reason", "工号不存在！");
 				return map;

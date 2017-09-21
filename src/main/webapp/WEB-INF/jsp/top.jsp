@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ page import="com.drepair.controller.WetsetCotroller" %>
-<header class="am-topbar am-topbar-inverse admin-header" style="background-color:<%=WetsetCotroller.topbarColor%>;border-color:<%=WetsetCotroller.topbarColor%>;">
+<%@ page import="com.drepair.controller.WebsetCotroller" %>
+<header class="am-topbar am-topbar-inverse admin-header" style="background-color:<%=WebsetCotroller.topbarColor(request)%>;border-color:<%=WebsetCotroller.topbarColor(request)%>;">
 	<div class="am-topbar-brand">
 		<strong>Drepair</strong> <small>后台管理中心</small>
 	</div>

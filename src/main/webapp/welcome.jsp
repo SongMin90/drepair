@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="com.drepair.controller.WetsetCotroller" %>
+<%@ page import="com.drepair.controller.WebsetCotroller" %>
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -116,8 +116,8 @@
             报修 <span class="am-icon-caret-down"></span>
           </a>
           <ul class="am-dropdown-content">
-           	<li>版本：<%=WetsetCotroller.version_baoxiu%></li>
-           	<li>更新内容：<%=WetsetCotroller.updateInfo_baoxiu%></li>
+           	<li>版本：<%=WebsetCotroller.version_baoxiu(request)%></li>
+           	<li>更新内容：<%=WebsetCotroller.updateInfo_baoxiu(request)%></li>
             <li><a href="${pageContext.request.contextPath}/apk/Baoxiu.apk"><i class="am-icon-mobile am-icon-sm"></i> 下载客户端</a></li>
           </ul>
         </li>
@@ -126,8 +126,8 @@
             抢修 <span class="am-icon-caret-down"></span>
           </a>
           <ul class="am-dropdown-content">
-            <li>版本：<%=WetsetCotroller.version_qiangxiu%></li>
-           	<li>更新内容：<%=WetsetCotroller.updateInfo_qiangxiu%></li>
+            <li>版本：<%=WebsetCotroller.version_qiangxiu(request)%></li>
+           	<li>更新内容：<%=WebsetCotroller.updateInfo_qiangxiu(request)%></li>
             <li><a href="${pageContext.request.contextPath}/apk/Qiangxiu.apk"><i class="am-icon-mobile am-icon-sm"></i> 下载客户端</a></li>
           </ul>
         </li>

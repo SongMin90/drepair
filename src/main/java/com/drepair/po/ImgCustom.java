@@ -7,4 +7,20 @@ package com.drepair.po;
  */
 public class ImgCustom extends Img {
 
+	private String userId; // 用户ID
+	private String profession; // 归属人类型
+	
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public String getProfession() {
+		return profession;
+	}
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
+	
 }

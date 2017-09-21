@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="com.drepair.controller.WetsetCotroller" %>
+<%@ page import="com.drepair.controller.WebsetCotroller" %>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title><%=WetsetCotroller.webName%></title>
+<title><%=WebsetCotroller.webName(request)%></title>
 <meta name="keywords" content="index">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="renderer" content="webkit">

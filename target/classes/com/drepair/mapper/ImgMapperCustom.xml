@@ -8,6 +8,8 @@
 	    <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
 	    <result column="img_datetime" property="imgDatetime" jdbcType="TIMESTAMP" />
 	    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+	    <result column="profession" property="profession" jdbcType="VARCHAR" />
 	</resultMap>
     
   	<!-- Base_Column_List -->
@@ -24,5 +26,26 @@
   	<delete id="delById" parameterType="java.lang.Integer">
   	    delete from img where img_id=#{0}
   	</delete>
+  	
+  	<!-- 添加用户头像 -->
+  	<insert id="saveIcon" parameterType="com.drepair.po.ImgCustom">
+  	    INSERT INTO `img` 
+  	    (`img_url`, `img_datetime`, `user_id`, `profession`) 
+  	    VALUES 
+  	    (#{imgUrl,jdbcType=VARCHAR}, #{imgDatetime,jdbcType=TIMESTAMP}, #{userId,jdbcType=VARCHAR}, #{profession,jdbcType=VARCHAR})
+  	</insert>
+  	
+  	<!-- 更新用户头像 -->
+  	<update id="updateIcon" parameterType="com.drepair.po.ImgCustom">
+  	    UPDATE `img` SET 
+  	    `img_url`=#{imgUrl,jdbcType=VARCHAR}, `img_datetime`=#{imgDatetime,jdbcType=TIMESTAMP} 
+  	    WHERE 
+  	    (`user_id`=#{userId,jdbcType=VARCHAR} and `profession`=#{profession,jdbcType=VARCHAR})
+  	</update>
+  	
+  	<!-- 查询头像url -->
+  	<select id="findIconUrl" parameterType="com.drepair.po.ImgCustom" resultType="String">
+  	    SELECT `img_url` FROM `img` WHERE `user_id`=#{userId,jdbcType=VARCHAR} and `profession`=#{profession,jdbcType=VARCHAR}
+  	</select>
   	
 </mapper>
