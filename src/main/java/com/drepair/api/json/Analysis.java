@@ -1,6 +1,7 @@
 package com.drepair.api.json;
 
 import com.alibaba.fastjson.JSON;
+import com.drepair.api.po.Eval;
 import com.drepair.api.po.Hmr;
 import com.drepair.api.po.Stu;
 
@@ -27,5 +28,14 @@ public class Analysis {
 	 */
 	public static Stu forStu(String jsonData) {
 		return JSON.parseObject(jsonData, Stu.class);
+	}
+	
+	/**
+	 * json解析（评论人头像url）
+	 * @param jsonData
+	 * @return
+	 */
+	public static String forEvalIconUrl(String jsonData) {
+		return JSON.parseObject(jsonData, Eval.class).getIconUrl();
 	}
 }

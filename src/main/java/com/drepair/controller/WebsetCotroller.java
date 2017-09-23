@@ -2,7 +2,9 @@ package com.drepair.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,23 +35,33 @@ import com.drepair.utils.MySQLDatabase;
 public class WebsetCotroller {
 	
 	/**
-	 * 报修客户端版本
+	 * 报修客户端信息
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="getBaoxiuVersion", method={RequestMethod.GET})
-	public @ResponseBody double getBaoxiuVersion(HttpServletRequest request) {
-		return Double.parseDouble(read(request).getVersion_baoxiu());
+	@RequestMapping(value="getBaoxiuInfo", method={RequestMethod.GET})
+	public @ResponseBody Map<String, Object> getBaoxiuInfo(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		double version = Double.parseDouble(read(request).getVersion_baoxiu());
+		String updateInfo = read(request).getUpdateInfo_baoxiu();
+		map.put("version", version);
+		map.put("updateInfo", updateInfo);
+		return map;
 	}
 	
 	/**
-	 * 抢修修客户端版本
+	 * 抢修修客户端信息
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="getQiangxiuVersion", method={RequestMethod.GET})
-	public @ResponseBody double getQiangxiuVersion(HttpServletRequest request) {
-		return Double.parseDouble(read(request).getVersion_qiangxiu());
+	@RequestMapping(value="getQiangxiuInfo", method={RequestMethod.GET})
+	public @ResponseBody Map<String, Object> getQiangxiuInfo(HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		double version = Double.parseDouble(read(request).getVersion_qiangxiu());
+		String updateInfo = read(request).getUpdateInfo_qiangxiu();
+		map.put("version", version);
+		map.put("updateInfo", updateInfo);
+		return map;
 	}
 	
 	/**
@@ -373,7 +385,7 @@ public class WebsetCotroller {
 	 * @param request
 	 */
 	private void save(Setting setting, HttpServletRequest request) {
-		String path = request.getServletContext().getRealPath("/WEB-INF/") + "/webset.json";
+		String path = "/usr/drepair/set/webset.json";
 		Object json = JSON.toJSON(setting);
 		FileHelper.writeUTF8(path, json.toString());
 	}
@@ -384,7 +396,7 @@ public class WebsetCotroller {
 	 * @return
 	 */
 	public static Setting read(HttpServletRequest request) {
-		String path = request.getServletContext().getRealPath("/WEB-INF/") + "/webset.json";
+		String path = "/usr/drepair/set/webset.json";
 		String json = FileHelper.readUTF8(path);
 		return JSON.parseObject(json, Setting.class);
 	}

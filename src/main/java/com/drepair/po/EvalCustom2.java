@@ -10,9 +10,10 @@ public class EvalCustom2 {
 
 	// 评价人姓名
 	private String evalName;
-
 	// 评价内容
 	private String evalContent;
+	// 评价人头像url
+	private String evalIconUrl;
 
 	public String getEvalName() {
 		return evalName;
@@ -29,4 +30,13 @@ public class EvalCustom2 {
 	public void setEvalContent(String evalContent) {
 		this.evalContent = evalContent;
 	}
+
+	public String getEvalIconUrl() {
+		return evalIconUrl;
+	}
+
+	public void setEvalIconUrl(String evalIconUrl) {
+		this.evalIconUrl = evalIconUrl;
+	}
+	
 }

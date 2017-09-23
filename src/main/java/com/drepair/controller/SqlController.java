@@ -4,15 +4,17 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.drepair.po.SqlCustom;
+import com.drepair.po.webset.Setting;
 import com.drepair.service.SqlService;
 import com.drepair.utils.MySQLDatabase;
 
@@ -28,17 +30,13 @@ public class SqlController {
 	@Autowired
 	private SqlService sqlService;
 	
-	// 数据库备份地址
-	@Value("#{configProperties['sqlBackupPath']}")
-	private String sqlBackupPath;
-	
 	/**
 	 * 更新sql
 	 * @param sqlId
 	 * @return
 	 */
 	@RequestMapping(value="/update", method={RequestMethod.POST})
-	public @ResponseBody Map<String, String> update(Integer sqlId) {
+	public @ResponseBody Map<String, String> update(HttpServletRequest request, Integer sqlId) {
 		Map<String,String> map = new HashMap<String, String>();
 		
 		try {
@@ -46,8 +44,9 @@ public class SqlController {
 			SqlCustom sqlCustom = sqlService.findById(sqlId);
 			
 			// 执行sql语句
+			Setting setting = WebsetCotroller.read(request);
 			String sqlPath = sqlCustom.getSqlPath();
-			new MySQLDatabase().dataBaseImport("127.0.0.1", "drepair", "root", "sa", sqlBackupPath + sqlPath);
+			new MySQLDatabase().dataBaseImport("127.0.0.1", "drepair", "root", "sa", setting.getSqlBackupPath() + sqlPath);
 			
 			map.put("result", "成功！");
 		} catch (Exception e) {
@@ -64,7 +63,7 @@ public class SqlController {
 	 * @return
 	 */
 	@RequestMapping(value="/delSqls", method={RequestMethod.POST})
-	public @ResponseBody Map<String, String> delSqls(Integer[] ids) {
+	public @ResponseBody Map<String, String> delSqls(HttpServletRequest request, Integer[] ids) {
 		Map<String,String> map = new HashMap<String, String>();
 		
 		try {
@@ -77,7 +76,8 @@ public class SqlController {
 				sqlService.deleteById(id);
 				
 				// 物理地址删除
-				FileUtils.deleteQuietly(new File(sqlBackupPath + sqlPath));
+				Setting setting = WebsetCotroller.read(request);
+				FileUtils.deleteQuietly(new File(setting.getSqlBackupPath() + sqlPath));
 			}
 			map.put("result", "成功！");
 		} catch (Exception e) {

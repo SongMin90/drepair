@@ -2,13 +2,13 @@ package com.drepair.service.imp;
 
 import java.io.File;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.drepair.controller.WebsetCotroller;
 import com.drepair.mapper.ImgMapper;
 import com.drepair.mapper.ImgMapperCustom;
 import com.drepair.po.Img;
@@ -43,8 +43,7 @@ public class ImgServiceImpl implements ImgService {
 			imgMapperCustom.delById(imgCustom.getImgId());
 			
 			// 3、再删除物理地址的图片
-			ResourceBundle resource = ResourceBundle.getBundle("webset"); // 读取properties文件
-			String imgPath = resource.getString("imgPath");
+			String imgPath = WebsetCotroller.imgPath(request);
 			String imgPaths = imgPath.split("imgs")[0] + imgCustom.getImgUrl();
 			FileUtils.deleteQuietly(new File(imgPaths));
 		}

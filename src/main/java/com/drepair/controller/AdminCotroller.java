@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.drepair.po.AdminCustom;
+import com.drepair.po.webset.Setting;
 import com.drepair.service.AdminService;
 import com.drepair.utils.CookieHelper;
 import com.drepair.utils.RandomValidateCode;
@@ -35,10 +35,6 @@ public class AdminCotroller {
 	@Autowired
 	private AdminService adminService;
 	
-	// cookie储存时间(秒)
-	@Value("#{configProperties['cookieSaveTime']}")
-	private int cookieSaveTime;
-
 	/**
 	 * 登录获取验证码
 	 * @param response
@@ -131,8 +127,9 @@ public class AdminCotroller {
 							// 判断是否勾选自动登录
 							if(remember != null) {
 								// 将登录的Id和密码存入cookie
-								CookieHelper.add(cookieSaveTime, response, "adminId", adminCustom.getAdminId()+"");
-								CookieHelper.add(cookieSaveTime, response, "adminPwd", adminCustom.getAdminPwd());
+								Setting setting = WebsetCotroller.read(request);
+								CookieHelper.add(setting.getCookieSaveTime(), response, "adminId", adminCustom.getAdminId()+"");
+								CookieHelper.add(setting.getCookieSaveTime(), response, "adminPwd", adminCustom.getAdminPwd());
 							}
 							return "forward:main";
 						}

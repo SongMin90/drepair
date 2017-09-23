@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.drepair.api.json.Analysis;
+import com.drepair.api.net.HttpUtils;
 import com.drepair.po.EvalCustom;
 import com.drepair.po.EvalCustom1;
 import com.drepair.po.EvalCustom2;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -75,7 +79,7 @@ public class EvalController {
 	 * @return
 	 */
 	@RequestMapping(value="/getEvalByOrderId", method={RequestMethod.GET})
-	public @ResponseBody Map<String, Object> getEvalByOrderId(int orderId) {
+	public @ResponseBody Map<String, Object> getEvalByOrderId(int orderId, HttpServletRequest request) {
 		Map<String,Object> map = new HashMap<String, Object>();
 		try {
 			List<EvalCustom2> evalsList = new ArrayList<EvalCustom2>();
@@ -85,18 +89,48 @@ public class EvalController {
 				// 取出评价人信息
 				if(evalList.get(i).getStuId() != null) {
 					// TODO 根据api获取学生姓名，先模拟数据
-					evalCustom2.setEvalName("张三");
+					if(WebsetCotroller.read(request).getApiState().equals("on")) {
+						try {
+							String json = HttpUtils.getJSON(HttpUtils.STU_URL, evalList.get(i).getStuId());
+							evalCustom2.setEvalName(Analysis.forStu(json).getStudent().getStudentName());
+							// 获取头像
+							String iconUrl = HttpUtils.getEvalIconUrl(evalList.get(i).getStuId(), "stu");
+							evalCustom2.setEvalIconUrl(iconUrl);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} else {
+						evalCustom2.setEvalName("姓名");
+						evalCustom2.setEvalIconUrl("icon/icon.jpeg");
+					}
 				} else if(evalList.get(i).getHmrId() != null) {
 					// TODO 根据api获取宿管姓名，先模拟数据
-					evalCustom2.setEvalName("张三");
+					if(WebsetCotroller.read(request).getApiState().equals("on")) {
+						try {
+							String json = HttpUtils.getJSON(HttpUtils.HMR_URL, evalList.get(i).getHmrId()+"");
+							evalCustom2.setEvalName(Analysis.forHmr(json).getManager().getManagerName());
+							// 获取头像
+							String iconUrl = HttpUtils.getEvalIconUrl(evalList.get(i).getHmrId()+"", "hmr");
+							evalCustom2.setEvalIconUrl(iconUrl);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} else {
+						evalCustom2.setEvalName("张三");
+						evalCustom2.setEvalIconUrl("icon/icon.jpeg");
+					}
 				} else {
 					// 查询评论内容和评论人ID及姓名
 					EvalCustom1 evalCustom1 = evalService.findOrder(evalList.get(i));
 					// 设置评价人姓名
 					if(evalCustom1.getAdminCustom() != null) {
 						evalCustom2.setEvalName(evalCustom1.getAdminCustom().getAdminName());
+						evalCustom2.setEvalIconUrl("icon/icon.jpeg");
 					} else if (evalCustom1.getRepairerCustom() != null) {
 						evalCustom2.setEvalName(evalCustom1.getRepairerCustom().getRepairerName());
+						// 获取头像
+						String iconUrl = HttpUtils.getEvalIconUrl(evalCustom1.getRepairerCustom().getRepairerId()+"", "repairer");
+						evalCustom2.setEvalIconUrl(iconUrl);
 					}
 				}
 				// 设置评价内容

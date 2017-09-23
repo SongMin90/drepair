@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -174,7 +175,12 @@ public class ImgController {
 						if(iconUrl == null) { // 为空就新增
 							imgService.saveIcon(imgCustom);
 						} else { // 有就更新
+							// 更新数据
 							imgService.updateIcon(imgCustom);
+							// 再删除历史图片
+							String imgPath = WebsetCotroller.imgPath(request);
+							String imgPaths = imgPath.split("imgs")[0] + iconUrl;
+							FileUtils.deleteQuietly(new File(imgPaths));
 						}
 					}
 				}
