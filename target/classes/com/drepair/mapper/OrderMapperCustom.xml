@@ -110,12 +110,12 @@
         <if test="hmrId != null">
             hmr_id=#{hmrId,jdbcType=INTEGER}
         </if>
-        and order_state=#{orderState,jdbcType=INTEGER}
+        and order_state=#{orderState,jdbcType=INTEGER} ORDER BY `order_id` DESC
     </select>
     
     <!-- 抢单端根据订单状态获取自己的全部订单 -->
     <select id="getRepairOrders" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        SELECT * FROM `order` WHERE repairer_id=#{1} and order_state=#{0}
+        SELECT * FROM `order` WHERE repairer_id=#{1} and order_state=#{0} ORDER BY `order_id` DESC
     </select>
     
     <!-- 更新订单信息 -->

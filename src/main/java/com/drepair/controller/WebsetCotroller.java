@@ -256,6 +256,7 @@ public class WebsetCotroller {
 			setting.setUpdateInfo_web(updateInfo_web); // 设置更新内容
 			save(setting, request); // 储存
 			file_web.transferTo(new File(setting.getWeb_path())); // 复制文件
+			Thread.sleep(1000 * 30); // 休眠30秒
 			attr.addFlashAttribute("message", "提交更新成功！");
 		} catch (Exception e) {
 			attr.addFlashAttribute("message", "服务器出错啦！");
@@ -310,40 +311,23 @@ public class WebsetCotroller {
 				(new File(sqlBackupPath)).mkdir();
 			}
 			
+			// 实例线程
+			SqlBackupThread thread = new SqlBackupThread(sqlBackupPath, sqlBackupTime, sqlService);
+			
 			// 判断是启动还是停止
 			if(setting.getIsStart_sqlBackup().equals("off")) {
 				// 开启定时备份
 				setting.setIsStart_sqlBackup("on");
 				save(setting, request); // 储存
-				new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						while(setting.getIsStart_sqlBackup().equals("on")) {
-							try {
-								Thread.sleep(sqlBackupTime * 1000);
-								String saveName = DateTime.getDate() + "_" + DateTime.getTime() + ".sql";
-								// 物理位置储存
-								new MySQLDatabase().exportDatabaseTool("127.0.0.1", "root", "sa", sqlBackupPath, saveName, "drepair");
-								// 数据库添加一条记录
-								try {
-									SqlCustom sqlCustom = new SqlCustom();
-									sqlCustom.setSqlPath(saveName);
-									sqlService.save(sqlCustom);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}).start();
+				thread.start(); // 启动线程
 				attr.addFlashAttribute("message", "启动成功！");
 			} else {
 				// 关闭定时备份
 				setting.setIsStart_sqlBackup("off");
 				save(setting, request); // 储存
+				// 停止线程
+				thread.exit(true);
+				thread.join();
 				attr.addFlashAttribute("message", "停止成功！");
 			}
 		} catch (Exception e) {
@@ -399,6 +383,50 @@ public class WebsetCotroller {
 		String path = "/usr/drepair/set/webset.json";
 		String json = FileHelper.readUTF8(path);
 		return JSON.parseObject(json, Setting.class);
+	}
+	
+}
+
+/**
+ * 数据库定时备份
+ * @author SongM
+ * @date 2017年9月25日 下午3:39:16
+ */
+class SqlBackupThread extends Thread {
+
+	private volatile boolean flag = false;
+	private int time;
+	private String sqlBackupPath;
+	private SqlService sqlService;
+	
+	public SqlBackupThread(String sqlBackupPath, int time, SqlService sqlService) {
+		this.time = time;
+		this.sqlBackupPath = sqlBackupPath;
+		this.sqlService = sqlService;
+	}
+	
+	public void exit(boolean flag) {
+		this.flag = flag;
+	}
+	
+	@Override
+	public void run() {
+		while(!flag) {
+			try {
+				// 延迟时间
+				Thread.sleep(time * 1000);
+				// 设置备份的sql名字
+				String saveName = DateTime.getDate() + "_" + DateTime.getTime() + ".sql";
+				// 物理位置储存
+				new MySQLDatabase().exportDatabaseTool("127.0.0.1", "root", "sa", sqlBackupPath, saveName, "drepair");
+				// 数据库添加一条记录
+				SqlCustom sqlCustom = new SqlCustom();
+				sqlCustom.setSqlPath(saveName);
+				sqlService.save(sqlCustom);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 }
